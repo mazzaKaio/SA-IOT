@@ -50,7 +50,7 @@ void loop() {
 
   for (byte i = 0; i < rfid.uid.size; i++) {
     conteudo.concat(String(rfid.uid.uidByte[i] < HEX ? " 0" : " "));
-    conteudo.concat(String(rfid.ui0d.uidByte[i], HEX));
+    conteudo.concat(String(rfid.uid.uidByte[i], HEX));
   }
 
   // Verificação
