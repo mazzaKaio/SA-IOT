@@ -1,12 +1,16 @@
 #include <MFRC522.h>
 #include <SPI.h>
+#include <Servo.h>
+
 #define PINO_RST 9
 #define PINO_SDA 10
 #define red 2
 #define green 3
 #define buzz 4
+#define servo 5
 
 MFRC522 rfid(PINO_SDA, PINO_RST);
+Servo micro;
 
 String cartao_rf = " 93 d3 75 e4";
 String chaveiro_rf = " 34 dd 7a a7";
@@ -15,9 +19,10 @@ int freq = 3300; // Hz
 
 void setup() {
   Serial.begin(9600);
-
   SPI.begin();
+
   rfid.PCD_Init();
+  micro.attach(servo);
 
   Serial.println("Aproxime sua tag...");
   Serial.println();
@@ -26,6 +31,7 @@ void setup() {
   pinMode(red, OUTPUT);
   pinMode(buzz, OUTPUT);
 
+  micro.write(0);
   digitalWrite(red, HIGH);
   noTone(buzz);
 }
@@ -48,15 +54,16 @@ void loop() {
   }
 
   // Verificação
-
   if (conteudo == chaveiro_rf) {
     Serial.println("Bem-vindo, CHAVEIRO!");
     ascender();
+    micro.write(180);
     delay(1500);
 
   } else if (conteudo == cartao_rf) {
     Serial.println("Bem-vindo, CARTÃO!");
     ascender();
+    micro.write(180);
     delay(1500);
 
   } else {
