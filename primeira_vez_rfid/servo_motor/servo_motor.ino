@@ -58,13 +58,15 @@ void loop() {
     Serial.println("Bem-vindo, CHAVEIRO!");
     ascender();
     micro.write(180);
-    delay(1500);
+    delay(6000);
+    micro.write(0);
 
   } else if (conteudo == cartao_rf) {
     Serial.println("Bem-vindo, CARTÃO!");
     ascender();
     micro.write(180);
-    delay(1500);
+    delay(6000);
+    micro.write(0);
 
   } else {
     Serial.println("Desconhecido!!!");
