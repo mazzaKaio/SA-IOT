@@ -8,9 +8,9 @@
 #include <SPI.h>
 
 // =============================================================
-// SERVOMOTOR DA GARAGEM
+// Servo motor DA GARAGEM
 // =============================================================
-Servo servoMotor;
+Servo SERVO_GARAGE;
 
 const int botaoAbrir  = 12;
 const int botaoFechar = 13;
@@ -51,7 +51,7 @@ int FREQUENCIA = 3300;
 #define pino_sensor_chuva A1   // Porta analógica
 #define servo_janela 6         
 
-Servo servoJanela;
+Servo MICRO_JANELA;
 bool is_raining = false;
 
 // =============================================================
@@ -62,8 +62,8 @@ void setup() {
   Serial.begin(9600);
 
   // ---- SERVO E BOTÕES DA GARAGEM ----
-  servoMotor.attach(5);
-  servoMotor.write(0);
+  SERVO_GARAGE.attach(5);
+  SERVO_GARAGE.write(0);
 
   pinMode(botaoAbrir, INPUT_PULLUP);
   pinMode(botaoFechar, INPUT_PULLUP);
@@ -84,8 +84,8 @@ void setup() {
 
   // ---- SENSOR DE CHUVA E SERVO DA JANELA ----
   pinMode(pino_sensor_chuva, INPUT);
-  servoJanela.attach(servo_janela);
-  servoJanela.write(0);
+  MICRO_JANELA.attach(servo_janela);
+  MICRO_JANELA.write(0);
 
   Serial.println("Sistema iniciado. Aproxime a TAG.");
 }
@@ -147,7 +147,7 @@ void loop() {
     if (conteudo == chaveiro_rf || conteudo == cartao_rf) {
       Serial.println("Acesso Liberado!");
       efeitoAcesso();
-      abrirEFecharGarage();
+      MICRO_DOOR(0);
     }
     else {
       Serial.println("TAG desconhecida:");
@@ -169,12 +169,12 @@ void loop() {
 void moverServoLento() {
   if (anguloAtual < anguloDestino) {
     anguloAtual++;
-    servoMotor.write(anguloAtual);
+    MICRO_GARAGE.write(anguloAtual);
     delay(15);
   }
   else if (anguloAtual > anguloDestino) {
     anguloAtual--;
-    servoMotor.write(anguloAtual);
+    MICRO_GARAGE.write(anguloAtual);
     delay(15);
   }
 }

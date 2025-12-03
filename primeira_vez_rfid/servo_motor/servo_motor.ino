@@ -12,7 +12,7 @@
 #define SERVO_DOOR 5
 
 MFRC522 rfid(PINO_SDA, PINO_RST);
-Servo micro;
+Servo MICRO_DOOR;
 
 String cartao_rf = " 93 d3 75 e4";
 String chaveiro_rf = " 07 e3 41 66";
@@ -24,7 +24,7 @@ void setup() {
   SPI.begin();
 
   rfid.PCD_Init();
-  micro.attach(SERVO_DOOR);
+  MICRO_DOOR.attach(SERVO_DOOR);
 
   Serial.println("Aproxime sua tag...");
   Serial.println();
@@ -33,7 +33,7 @@ void setup() {
   pinMode(LED_RED, OUTPUT);
   pinMode(BUZZER_DOOR, OUTPUT);
 
-  micro.write(180);
+  MICRO_DOOR.write(180);
   digitalWrite(LED_RED, HIGH);
   noTone(BUZZER_DOOR);
 }
@@ -59,16 +59,16 @@ void loop() {
   if (conteudo == chaveiro_rf) {
     Serial.println("Bem-vindo, CHAVEIRO!");
     ascender();
-    micro.write(0);
+    MICRO_DOOR.write(0);
     delay(15000);
-    micro.write(180);
+    MICRO_DOOR.write(180);
 
   } else if (conteudo == cartao_rf) {
     Serial.println("Bem-vindo, CARTÃO!");
     ascender();
-    micro.write(0);
+    MICRO_DOOR.write(0);
     delay(15000);
-    micro.write(180);
+    MICRO_DOOR.write(180);
 
   } else {
     Serial.println("Desconhecido!!!");
