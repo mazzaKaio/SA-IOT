@@ -1,0 +1,243 @@
+// =====================
+// PROJETO LIXO
+// =====================
+#include <Servo.h>
+Servo servoLixo;
+
+int lixo_ECHO = 2;
+int lixo_TRIG = 3;
+
+long lixo_duracao = 0;
+long lixo_distancia = 0;
+
+
+// =====================
+// PROJETO VARAL
+// =====================
+#define potenciometro A0
+Servo servoVaral;
+
+int leitura = 0;
+int angulo = 0;
+
+
+// =====================
+// PROJETO ALARME
+// =====================
+#define alarme_TRIG 13
+#define alarme_ECHO 11
+#define buzzer 12
+#define botaoLiga 7
+#define botaoDesliga 8
+
+bool alarmeLigado = false;
+bool disparado = false;
+
+long alarme_duracao = 0;
+long alarme_distancia = 0;
+
+
+// =====================
+// PROJETO LAMPADA
+// =====================
+#define luz_TRIG 10        // pino TRIG do ultrassônico
+#define luz_ECHO 9        // pino ECHO do ultrassônico
+#define luz_led 6          // led
+
+int luz_tempoInicio = 0;     // Guarda o momento em que o movimento foi detectado
+bool luz_luzAcesa = false;   // Variável de controle
+
+
+
+
+// ====================================================
+// SETUP
+// ====================================================
+void setup() {
+  Serial.begin(9600);
+
+  // LIXO
+  pinMode(lixo_ECHO, INPUT);
+  pinMode(lixo_TRIG, OUTPUT);
+  servoLixo.attach(4);
+  servoLixo.write(0);
+
+  // VARAL
+  servoVaral.attach(5);
+  servoVaral.write(0);
+
+  // ALARME
+  pinMode(alarme_TRIG, OUTPUT);
+  pinMode(alarme_ECHO, INPUT);
+  pinMode(buzzer, OUTPUT);
+  pinMode(botaoLiga, INPUT_PULLUP);
+  pinMode(botaoDesliga, INPUT_PULLUP);
+
+  noTone(buzzer); // garante buzzer desligado no início
+  
+  //LAMPADA
+  pinMode(luz_TRIG, OUTPUT);
+  pinMode(luz_ECHO, INPUT);
+  pinMode(luz_led, OUTPUT);
+
+}
+
+
+
+// ====================================================
+// LOOP PRINCIPAL
+// ====================================================
+void loop() {
+
+// ====================================================
+// PROJETO LIXO
+// ====================================================
+  digitalWrite(lixo_TRIG, LOW);
+  delayMicroseconds(5);
+  digitalWrite(lixo_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(lixo_TRIG, LOW);
+
+  lixo_duracao = pulseIn(lixo_ECHO, HIGH, 25000);
+  lixo_distancia = lixo_duracao / 58;
+
+  Serial.print("Lixeira: ");
+  Serial.print(lixo_distancia);
+  Serial.println(" cm");
+
+  if (lixo_distancia > 0 && lixo_distancia <= 50) {
+    servoLixo.write(90);
+    delay(3000);
+  } else {
+    servoLixo.write(0);
+  }
+
+  delay(50);
+
+
+
+// ====================================================
+// PROJETO VARAL
+// ====================================================
+  leitura = analogRead(potenciometro);
+  angulo = map(leitura, 0, 1023, 0, 90);
+  servoVaral.write(angulo);
+
+  Serial.print("Varal | Leitura: ");
+  Serial.print(leitura);
+  Serial.print("  Angulo: ");
+  Serial.println(angulo);
+
+  delay(5);
+
+
+
+// ====================================================
+// PROJETO ALARME
+// ====================================================
+
+  // BOTÃO LIGAR
+  if (digitalRead(botaoLiga) == LOW) {
+    alarmeLigado = true;
+    Serial.println("Alarme LIGADO");
+
+    tone(buzzer, 1200); delay(150);
+    tone(buzzer, 2000); delay(150);
+    noTone(buzzer);
+    delay(200);
+  }
+
+  // BOTÃO DESLIGAR
+  if (digitalRead(botaoDesliga) == LOW) {
+    alarmeLigado = false;
+    disparado = false;
+    noTone(buzzer);
+
+    Serial.println("Alarme DESLIGADO");
+
+    tone(buzzer, 800); delay(150);
+    tone(buzzer, 1000); delay(150);
+    noTone(buzzer);
+    delay(200);
+  }
+
+
+  // LEITURA DO ULTRASSÔNICO DO ALARME
+  if (alarmeLigado) {
+
+    digitalWrite(alarme_TRIG, LOW);
+    delayMicroseconds(5);
+
+    digitalWrite(alarme_TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(alarme_TRIG, LOW);
+
+    alarme_duracao = pulseIn(alarme_ECHO, HIGH, 25000);
+    alarme_distancia = alarme_duracao / 58;
+
+    Serial.print("Alarme: ");
+    Serial.print(alarme_distancia);
+    Serial.println(" cm");
+
+    if (alarme_distancia > 0 && alarme_distancia <= 50) {
+      disparado = true;
+      Serial.println("INTRUSO DETECTADO!");
+    }
+  }
+
+
+  // ALARME DISPARADO
+  if (disparado && alarmeLigado) {
+    tone(buzzer, 1200);
+    delay(200);
+    tone(buzzer, 1600);
+    delay(200);
+  } else {
+    noTone(buzzer);
+  }
+
+  
+  // ====================================================
+  // PROJETO LAMPADA
+  // ====================================================
+  // ------- LEITURA ULTRASSÔNICO (transformando em "movimento") -------
+  digitalWrite(luz_TRIG, LOW);
+  delayMicroseconds(5);
+
+  digitalWrite(luz_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(luz_TRIG, LOW);
+
+  long luz_duracao = pulseIn(luz_ECHO, HIGH, 25000);  // timeout 25ms
+  long luz_distancia = luz_duracao / 58;              // converte p/ cm
+
+  bool luz_movimento = false;
+
+  // Se a distância for válida e menor que 50 cm, consideramos "movimento"
+  if (luz_distancia > 0 && luz_distancia <= 50) {
+    luz_movimento = true;
+  }
+
+  // -------------------------------------------------------------------
+
+  // Verificando "movimento" (como se fosse o PIR)
+  if (luz_movimento) {
+    Serial.println("DETECTADO");
+
+    digitalWrite(luz_led, HIGH);
+    luz_luzAcesa = true;
+
+    luz_tempoInicio = millis();  // Guarda o horário que detectou movimento
+  } else {
+    Serial.println("n/a");
+  }
+
+  // Mantém a Luz acesa por 4 segundos (ou 150000 ms se quiser 2,5 minutos)
+  if (luz_luzAcesa) {
+    if (millis() - luz_tempoInicio >= 4000) {
+      digitalWrite(luz_led, LOW);  // Apaga a luz após o tempo
+      luz_luzAcesa = false;
+      Serial.println("Luz Apagada");
+    }
+  }
+}
