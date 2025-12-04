@@ -12,16 +12,6 @@ long lixo_distancia = 0;
 
 
 // =====================
-// PROJETO VARAL
-// =====================
-#define potenciometro A0
-Servo servoVaral;
-
-int leitura = 0;
-int angulo = 0;
-
-
-// =====================
 // PROJETO ALARME
 // =====================
 #define alarme_TRIG 13
@@ -60,11 +50,8 @@ void setup() {
   pinMode(lixo_ECHO, INPUT);
   pinMode(lixo_TRIG, OUTPUT);
   servoLixo.attach(4);
-  servoLixo.write(0);
+  servoLixo.write(100);
 
-  // VARAL
-  servoVaral.attach(5);
-  servoVaral.write(0);
 
   // ALARME
   pinMode(alarme_TRIG, OUTPUT);
@@ -105,31 +92,14 @@ void loop() {
   Serial.print(lixo_distancia);
   Serial.println(" cm");
 
-  if (lixo_distancia > 0 && lixo_distancia <= 50) {
-    servoLixo.write(90);
+  if (lixo_distancia > 0 && lixo_distancia <= 20) {
+    servoLixo.write(40);
     delay(3000);
   } else {
-    servoLixo.write(0);
+    servoLixo.write(100);
   }
 
   delay(50);
-
-
-
-// ====================================================
-// PROJETO VARAL
-// ====================================================
-  leitura = analogRead(potenciometro);
-  angulo = map(leitura, 0, 1023, 0, 90);
-  servoVaral.write(angulo);
-
-  Serial.print("Varal | Leitura: ");
-  Serial.print(leitura);
-  Serial.print("  Angulo: ");
-  Serial.println(angulo);
-
-  delay(5);
-
 
 
 // ====================================================
