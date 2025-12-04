@@ -1,0 +1,36 @@
+// PROJETO VARAL
+
+#include <Servo.h>
+Servo servoMotor;
+
+#define potenciometro A0
+
+int leitura;
+int angulo;  // valor convertido para 0–90 graus
+
+void setup() {
+  Serial.begin(9600);
+
+  servoMotor.attach(9);  // pino do servo
+}
+
+void loop() {
+
+  // Ler o potenciômetro (0 a 1023)
+  leitura = analogRead(potenciometro);
+
+  // Converter para ângulo (0 a 90) 
+  angulo = map(leitura, 0, 1023, 0, 90); //map(valor, minEntrada, maxEntrada, minSaida, maxSaida)
+
+  // Mover o servo
+  servoMotor.write(angulo);
+
+  // Mostrar no serial
+  Serial.print("Leitura: ");
+  Serial.print(leitura);
+  Serial.print("Ângulo: ");
+  Serial.println(angulo);
+
+  delay(1); 
+}
+

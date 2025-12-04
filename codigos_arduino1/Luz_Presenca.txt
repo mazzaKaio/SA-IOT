@@ -1,0 +1,64 @@
+// PROJETO ACENDENDO LUZ COM PRESENÇA (VERSÃO COM ULTRASSÔNICO)
+// Uso da função "millis()" que conta e registra o tempo desde quando o arduino foi ligado
+
+#define luz_TRIG 13        // pino TRIG do ultrassônico
+#define luz_ECHO 11        // pino ECHO do ultrassônico
+#define luz_led 7          // led
+
+int luz_tempoInicio = 0;     // Guarda o momento em que o movimento foi detectado
+bool luz_luzAcesa = false;   // Variável de controle
+
+void setup() {
+  pinMode(luz_TRIG, OUTPUT);
+  pinMode(luz_ECHO, INPUT);
+  pinMode(luz_led, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // ------- LEITURA ULTRASSÔNICO (transformando em "movimento") -------
+  digitalWrite(luz_TRIG, LOW);
+  delayMicroseconds(5);
+
+  digitalWrite(luz_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(luz_TRIG, LOW);
+
+  long luz_duracao = pulseIn(luz_ECHO, HIGH, 25000);  // timeout 25ms
+  long luz_distancia = luz_duracao / 58;              // converte p/ cm
+
+  bool luz_movimento = false;
+
+  // Se a distância for válida e menor que 50 cm, consideramos "movimento"
+  if (luz_distancia > 0 && luz_distancia <= 50) {
+    luz_movimento = true;
+  }
+
+  // -------------------------------------------------------------------
+
+  // Verificando "movimento" (como se fosse o PIR)
+  if (luz_movimento) {
+    Serial.println("DETECTADO");
+
+    digitalWrite(luz_led, HIGH);
+    luz_luzAcesa = true;
+
+    luz_tempoInicio = millis();  // Guarda o horário que detectou movimento
+  } else {
+    Serial.println("n/a");
+  }
+
+  // Mantém a Luz acesa por 4 segundos (ou 150000 ms se quiser 2,5 minutos)
+  if (luz_luzAcesa) {
+    if (millis() - luz_tempoInicio >= 4000) {
+      digitalWrite(luz_led, LOW);  // Apaga a luz após o tempo
+      luz_luzAcesa = false;
+      Serial.println("Luz Apagada");
+    }
+  }
+}
+
+
+

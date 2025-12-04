@@ -1,0 +1,96 @@
+// --- ALARME RESIDENCIAL COM SENSOR ULTRASSÔNICO ---
+
+
+#define TRIG 13           // Trigger do Ultrassônico
+#define ECHO 11           // Echo do Ultrassônico
+#define buzzer 7         // Buzzer
+#define botaoLiga 2      // Botão liga
+#define botaoDesliga 3   // Botão desliga
+
+bool alarmeLigado = false;
+bool disparado = false;
+
+long duracao = 0;
+long distancia = 0;
+
+void setup() {
+
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+  pinMode(buzzer, OUTPUT);
+
+  pinMode(botaoLiga, INPUT_PULLUP);
+  pinMode(botaoDesliga, INPUT_PULLUP);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // -------- BOTÃO LIGAR --------
+  if (digitalRead(botaoLiga) == LOW) {
+    alarmeLigado = true;
+    Serial.println("Alarme LIGADO");
+
+    tone(buzzer, 1150); delay(200);
+    noTone(buzzer);
+    tone(buzzer, 2000); delay(200);
+    noTone(buzzer);
+    delay(300);
+  }
+
+  // -------- BOTÃO DESLIGAR --------
+  if (digitalRead(botaoDesliga) == LOW) {
+    alarmeLigado = false;
+    disparado = false;
+    noTone(buzzer);
+
+    Serial.println("Alarme DESLIGADO");
+
+    tone(buzzer, 800); delay(250);
+    noTone(buzzer);
+    tone(buzzer, 1000); delay(250);
+    noTone(buzzer);
+
+    delay(300);
+  }
+
+
+  // -------- SENSOR ULTRASSÔNICO ATIVO SOMENTE SE O ALARME ESTIVER LIGADO --------
+  if (alarmeLigado) {
+
+    // Faz a leitura do ultrassônico
+    digitalWrite(TRIG, LOW);
+    delayMicroseconds(5);
+
+    digitalWrite(TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG, LOW);
+
+    duracao = pulseIn(ECHO, HIGH);
+    distancia = duracao / 58;  // converte para cm
+
+    Serial.print("Distancia: ");
+    Serial.print(distancia);
+    Serial.println(" cm");
+
+    // Dispara se estiver mais perto que 50 cm
+    if (distancia > 0 && distancia <= 50) {
+      disparado = true;
+      Serial.println("INTRUSO DETECTADO!");
+    }
+  }
+
+
+  // -------- SE O ALARME ESTIVER DISPARADO --------
+  if (disparado && alarmeLigado) {
+    tone(buzzer, 1000);
+    delay(300);
+    tone(buzzer, 1500);
+    delay(300);
+  } else {
+    noTone(buzzer);
+  }
+  
+}
+

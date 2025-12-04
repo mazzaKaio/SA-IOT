@@ -1,0 +1,80 @@
+// PROJETO GARAGEM COM 2 BOTÕES E SERVO LENTO
+
+#include <Servo.h>
+Servo servoMotor;
+
+// Pinos dos botões
+const int botaoAbrir = 12;
+const int botaoFechar = 13;
+
+// Variáveis de leitura
+int leituraAbrirAtual, leituraAbrirAnterior = HIGH;
+int leituraFecharAtual, leituraFecharAnterior = HIGH;
+
+// Controle
+int anguloAtual = 0;    // Começa fechado
+int anguloDestino = 0;  // Para onde o servo deve ir
+
+void setup() {
+  servoMotor.attach(8);  // Servo no pino 8
+  servoMotor.write(0);   // Começa fechado
+
+  pinMode(botaoAbrir, INPUT_PULLUP);
+  pinMode(botaoFechar, INPUT_PULLUP);
+}
+
+void loop() {
+
+  // Leitura dos botões
+  leituraAbrirAtual  = digitalRead(botaoAbrir);
+  leituraFecharAtual = digitalRead(botaoFechar);
+
+
+  // BOTÃO DE ABRIR (90 graus)
+  if (leituraAbrirAtual == LOW && leituraAbrirAnterior == HIGH) {
+    anguloDestino = 90;    // Abrir
+    delay(200);            
+  }
+
+  // BOTÃO DE FECHAR (0 graus)
+  if (leituraFecharAtual == LOW && leituraFecharAnterior == HIGH) {
+    anguloDestino = 0;     // Fechar
+    delay(200);          
+  }
+
+  // Atualiza estados anteriores
+  leituraAbrirAnterior  = leituraAbrirAtual;
+  leituraFecharAnterior = leituraFecharAtual;
+
+
+  // MOVIMENTO LENTO DO SERVO
+
+  if (anguloAtual < anguloDestino) {
+    anguloAtual++; //A cada 15ms acrecenta mais um angulo até chegar no anguloAtual
+    servoMotor.write(anguloAtual);
+    delay(15);  // ajuste para mais lento/rápido
+  }
+  else if (anguloAtual > anguloDestino) {
+    anguloAtual--;
+    servoMotor.write(anguloAtual);
+    delay(15);
+  }
+}
+
+//Para o servo motor acresentar ou descrentar grau nao precissa
+// de laço de repetição pois o proprio arduino repete com a
+// função loop()
+//Exemplo:
+// --- Primeira vez do loop: ---
+//0 < 90 → verdade
+//anguloAtual vira 1
+//servo vai para 1°
+//delay 15 ms
+// --- Segunda vez do loop: ---
+//1 < 90 → verdade
+//anguloAtual vira 2
+//servo vai para 2°
+//delay 15 ms
+//Isso vai acontecendo toda vez que o loop roda como se fosse um for
+
+

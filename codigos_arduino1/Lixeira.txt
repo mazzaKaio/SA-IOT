@@ -1,0 +1,51 @@
+//PROJETO ABRINDO LIXEIRA
+// SENSOR DE DISTANCIA ULTRASSONICO
+
+#include <Servo.h>
+Servo servoMotor;
+
+int ECHO = 2; //Pino 2 recebe o pulso
+int TRIG = 3; //Pino 3 envia o pulso
+
+long duracao = 0;
+long distancia = 0;
+
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(ECHO, INPUT);
+  pinMode(TRIG, OUTPUT);
+
+  
+  servoMotor.attach(8);  // Servo no pino 8
+  servoMotor.write(0);   // Começa fechado
+  
+}
+
+void loop()
+{
+  digitalWrite(TRIG, LOW);
+  delay(10);
+  digitalWrite(TRIG, HIGH);
+  delay(10);
+  digitalWrite(TRIG, LOW);
+  duracao = pulseIn(ECHO, HIGH);
+  distancia = duracao/58;
+  Serial.print("Distancia em cm: ");
+  Serial.println(distancia);
+  
+  //Se distancia LONGE
+  if (distancia <=50){
+    //Gira o Servo Motor
+    servoMotor.write(90);
+  }else{
+    servoMotor.write(0);
+  }
+  
+  delay(100);
+  
+  
+}
+
+
