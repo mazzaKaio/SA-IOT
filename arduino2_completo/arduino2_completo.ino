@@ -16,7 +16,7 @@ MFRC522 rfid(PINO_SDA, PINO_RST); // Objeto do RFID
 Servo MICRO_DOOR; // Objeto do Servo responsável pela porta
 
 // Variáveis usadas para verificação
-String cartao_rf = " 93 d3 75 e4";
+String cartao_rf = " e3 de cc e4";
 String chaveiro_rf = " 07 e3 41 66";
 int FREQUENCIA = 3300;
 
@@ -49,8 +49,6 @@ int anguloDestino = 0;
 #define SERVO_JANELA 7
 
 Servo MICRO_JANELA;
-
-bool is_raining = false;
 
 // ======================
 // VARAL
@@ -96,6 +94,7 @@ void setup() {
 
   // VARAL
   MICRO_VARAL.attach(SERVO_VARAL);
+  MICRO_JANELA.write(0);
 
   // APÓS TUDO
   Serial.println("Sistema iniciado. Aproxime a TAG.");
@@ -105,17 +104,18 @@ void loop() {
   // ======================
   // 1. FOGO
   // ======================
-  if (digitalRead(sensor_fogo) == HIGH) {
+  if (!digitalRead(sensor_fogo)) {
     alarmeIncendio();
+    Serial.println("FOGO!");
   }
 
   // ======================
   // 2. CHUVA
   // ======================
-  is_raining = digitalRead(SENSOR_CHUVA);
-
-  if (is_raining) {
+  if (!digitalRead(SENSOR_CHUVA)) {
     MICRO_JANELA.write(180);   // Fecha janela quando chove
+    MICRO_VARAL.write(0);
+    Serial.println("Está chovendo!");
   } else {
     MICRO_JANELA.write(0);     // Abre janela quando não chove
   }
@@ -127,7 +127,7 @@ void loop() {
   leituraFecharAtual = digitalRead(botaoFechar);
 
   if (leituraAbrirAtual == LOW && leituraAbrirAnterior == HIGH) {
-    anguloDestino = 90;
+    anguloDestino = 118;
     delay(200);
   }
 
@@ -154,11 +154,15 @@ void loop() {
     if (conteudo == chaveiro_rf || conteudo == cartao_rf) {
       Serial.println("Acesso Liberado!");
       efeitoAcesso();
+      MICRO_DOOR.write(0);
+      delay(4000);
+      MICRO_DOOR.write(180);
     }
     else {
       Serial.println("TAG desconhecida:");
       Serial.println(conteudo);
       efeitoErro();
+      delay(1500);
     }
   }
 
@@ -177,7 +181,7 @@ void loop() {
   // Mostrar no serial
   Serial.print("Leitura: ");
   Serial.print(leitura_v);
-  Serial.print("Ângulo: ");
+  Serial.print(" | Ângulo: ");
   Serial.println(angulo_v);
 
   delay(1);
