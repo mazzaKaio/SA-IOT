@@ -167,29 +167,33 @@ void loop() {
   }
 
   // ======================
-  // 5. VARAL
-  // ======================
-  // Ler o potenciômetro (0 a 1023)
-  leitura_v = analogRead(POTEN_VARAL);
-
-  // Converter para ângulo (0 a 90) 
-  angulo_v = map(leitura_v, 0, 1023, 0, 90); //map(valor, minEntrada, maxEntrada, minSaida, maxSaida)
-
-  // Mover o servo
-  MICRO_VARAL.write(angulo_v);
-
-  // Mostrar no serial
-  Serial.print("Leitura: ");
-  Serial.print(leitura_v);
-  Serial.print(" | Ângulo: ");
-  Serial.println(angulo_v);
-
-  delay(1);
-
-  // ======================
   // 6. MOVIMENTO LENTO - GARAGEM
   // ======================
   moverServoLento();
+
+
+  // ======================
+  // 5. VARAL
+  // ======================
+  // Ler o potenciômetro (0 a 1023)
+
+  if (digitalRead(SENSOR_CHUVA)) {
+    leitura_v = analogRead(POTEN_VARAL);
+
+    // Converter para ângulo (0 a 90) 
+    angulo_v = map(leitura_v, 0, 1023, 0, 90); //map(valor, minEntrada, maxEntrada, minSaida, maxSaida)
+    
+    // Mover o servo
+    MICRO_VARAL.write(angulo_v);
+
+    // Mostrar no serial
+    Serial.print("Leitura: ");
+    Serial.print(leitura_v);
+    Serial.print(" | Ângulo: ");
+    Serial.println(angulo_v);
+
+    delay(1);
+  }
 }
 
   // ======================
