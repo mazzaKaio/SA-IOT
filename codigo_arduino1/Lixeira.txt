@@ -19,7 +19,7 @@ void setup()
 
   
   servoMotor.attach(8);  // Servo no pino 8
-  servoMotor.write(0);   // Começa fechado
+  servoMotor.write(100);   // Começa fechado
   
 }
 
@@ -38,9 +38,9 @@ void loop()
   //Se distancia LONGE
   if (distancia <=50){
     //Gira o Servo Motor
-    servoMotor.write(90);
+    servoMotor.write(40);
   }else{
-    servoMotor.write(0);
+    servoMotor.write(100);
   }
   
   delay(100);
