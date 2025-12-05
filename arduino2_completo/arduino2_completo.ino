@@ -167,13 +167,13 @@ void loop() {
   }
 
   // ======================
-  // 6. MOVIMENTO LENTO - GARAGEM
+  // 5. MOVIMENTO LENTO - GARAGEM
   // ======================
   moverServoLento();
 
 
   // ======================
-  // 5. VARAL
+  // 6. VARAL
   // ======================
   // Ler o potenciômetro (0 a 1023)
 
@@ -192,7 +192,7 @@ void loop() {
     Serial.print(" | Ângulo: ");
     Serial.println(angulo_v);
 
-    delay(1);
+    delay(10);
   }
 }
 

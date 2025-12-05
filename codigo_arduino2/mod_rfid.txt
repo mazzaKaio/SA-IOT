@@ -1,0 +1,68 @@
+// ======================
+// RFID MODULE
+// ======================
+
+#define PINO_RST 9
+#define PINO_SDA 10
+#define BUZZER_DOOR 2
+#define SERVO_DOOR 3
+
+MFRC522 rfid(PINO_SDA, PINO_RST);
+Servo MICRO_DOOR;
+
+String cartao_rf   = " e3 de cc e4";
+String chaveiro_rf = " 07 e3 41 66";
+int FREQUENCIA = 3300;
+
+void setupRFID() {
+  SPI.begin();
+  rfid.PCD_Init();
+
+  pinMode(BUZZER_DOOR, OUTPUT);
+
+  MICRO_DOOR.attach(SERVO_DOOR);
+  MICRO_DOOR.write(180);
+}
+
+void loopRFID() {
+  String conteudo = "";
+
+  if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
+
+    for (byte i = 0; i < rfid.uid.size; i++) {
+      conteudo.concat(String(rfid.uid.uidByte[i] < 16 ? " 0" : " "));
+      conteudo.concat(String(rfid.uid.uidByte[i], HEX));
+    }
+
+    if (conteudo == chaveiro_rf || conteudo == cartao_rf) {
+      Serial.println("Acesso Liberado!");
+      efeitoAcesso();
+      MICRO_DOOR.write(0);
+      delay(4000);
+      MICRO_DOOR.write(180);
+    }
+    else {
+      Serial.println("TAG desconhecida:");
+      Serial.println(conteudo);
+      efeitoErro();
+      delay(1500);
+    }
+  }
+}
+
+// EFEITOS DO RFID
+void efeitoAcesso() {
+  tone(BUZZER_DOOR, FREQUENCIA); delay(150);
+  noTone(BUZZER_DOOR);           delay(150);
+  tone(BUZZER_DOOR, FREQUENCIA); delay(150);
+  noTone(BUZZER_DOOR);           delay(500);
+}
+
+void efeitoErro() {
+  for (int i = 0; i < 3; i++) {
+    tone(BUZZER_DOOR, FREQUENCIA);
+    delay(100);
+    noTone(BUZZER_DOOR);
+    delay(100);
+  }
+}

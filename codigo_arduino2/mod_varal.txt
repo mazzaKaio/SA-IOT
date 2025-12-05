@@ -1,0 +1,31 @@
+// ======================
+// VARAL MODULE
+// ======================
+
+#define POTEN_VARAL A4
+#define SERVO_VARAL 8
+
+Servo MICRO_VARAL;
+
+int leitura_v = 0;
+int angulo_v = 0;
+
+void setupVaral() {
+  MICRO_VARAL.attach(SERVO_VARAL);
+}
+
+void loopVaral() {
+  if (digitalRead(SENSOR_CHUVA)) {
+    leitura_v = analogRead(POTEN_VARAL);
+    angulo_v = map(leitura_v, 0, 1023, 0, 90);
+
+    MICRO_VARAL.write(angulo_v);
+
+    Serial.print("Leitura: ");
+    Serial.print(leitura_v);
+    Serial.print(" | Ângulo: ");
+    Serial.println(angulo_v);
+
+    delay(10);
+  }
+}

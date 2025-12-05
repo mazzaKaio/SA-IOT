@@ -1,0 +1,56 @@
+// ======================
+// GARAGEM MODULE
+// ======================
+
+#define SERVO_GARAGE 4
+#define botaoAbrir A1
+#define botaoFechar A2
+
+Servo MICRO_GARAGE;
+
+int leituraAbrirAtual,  leituraAbrirAnterior  = HIGH;
+int leituraFecharAtual, leituraFecharAnterior = HIGH;
+
+int anguloAtual   = 0;
+int anguloDestino = 0;
+
+void setupGaragem() {
+  MICRO_GARAGE.attach(SERVO_GARAGE);
+  MICRO_GARAGE.write(0);
+
+  pinMode(botaoAbrir, INPUT_PULLUP);
+  pinMode(botaoFechar, INPUT_PULLUP);
+}
+
+void loopGaragem() {
+  leituraAbrirAtual  = digitalRead(botaoAbrir);
+  leituraFecharAtual = digitalRead(botaoFechar);
+
+  if (leituraAbrirAtual == LOW && leituraAbrirAnterior == HIGH) {
+    anguloDestino = 118;
+    delay(200);
+  }
+
+  if (leituraFecharAtual == LOW && leituraFecharAnterior == HIGH) {
+    anguloDestino = 0;
+    delay(200);
+  }
+
+  leituraAbrirAnterior  = leituraAbrirAtual;
+  leituraFecharAnterior = leituraFecharAtual;
+
+  moverServoLento();
+}
+
+void moverServoLento() {
+  if (anguloAtual < anguloDestino) {
+    anguloAtual++;
+    MICRO_GARAGE.write(anguloAtual);
+    delay(15);
+  }
+  else if (anguloAtual > anguloDestino) {
+    anguloAtual--;
+    MICRO_GARAGE.write(anguloAtual);
+    delay(15);
+  }
+}

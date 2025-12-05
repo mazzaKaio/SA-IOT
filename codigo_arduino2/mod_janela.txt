@@ -1,0 +1,23 @@
+// ======================
+// JANELA MODULE
+// ======================
+
+#define SENSOR_CHUVA A3
+#define SERVO_JANELA 7
+
+Servo MICRO_JANELA;
+
+void setupJanela() {
+  pinMode(SENSOR_CHUVA, INPUT);
+  MICRO_JANELA.attach(SERVO_JANELA);
+  MICRO_JANELA.write(0);
+}
+
+void loopJanela() {
+  if (!digitalRead(SENSOR_CHUVA)) {
+    MICRO_JANELA.write(180);
+    Serial.println("Está chovendo!");
+  } else {
+    MICRO_JANELA.write(0);
+  }
+}

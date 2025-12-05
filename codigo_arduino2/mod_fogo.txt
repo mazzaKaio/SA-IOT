@@ -1,0 +1,26 @@
+// ======================
+// SENSOR DE FOGO MODULE
+// ======================
+
+#define sensor_fogo 5
+#define buzzer_fogo 6
+#define freq_fogo 960
+
+void setupFogo() {
+  pinMode(sensor_fogo, INPUT);
+  pinMode(buzzer_fogo, OUTPUT);
+}
+
+void loopFogo() {
+  if (!digitalRead(sensor_fogo)) {
+    alarmeIncendio();
+    Serial.println("FOGO!");
+  }
+}
+
+void alarmeIncendio() {
+  tone(buzzer_fogo, freq_fogo);
+  delay(1500);
+  noTone(buzzer_fogo);
+  delay(1500);
+}
