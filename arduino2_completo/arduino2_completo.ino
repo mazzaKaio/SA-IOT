@@ -90,11 +90,11 @@ void setup() {
   // JANELA
   pinMode(SENSOR_CHUVA, INPUT);
   MICRO_JANELA.attach(SERVO_JANELA);
-  MICRO_JANELA.write(0);
+  MICRO_JANELA.write(180);
 
   // VARAL
   MICRO_VARAL.attach(SERVO_VARAL);
-  MICRO_JANELA.write(0);
+  MICRO_VARAL.write(0);
 
   // APÓS TUDO
   Serial.println("Sistema iniciado. Aproxime a TAG.");
@@ -113,11 +113,12 @@ void loop() {
   // 2. CHUVA
   // ======================
   if (!digitalRead(SENSOR_CHUVA)) {
-    MICRO_JANELA.write(180);   // Fecha janela quando chove
+    MICRO_JANELA.write(0);   // Fecha janela quando chove
     MICRO_VARAL.write(0);
-    Serial.println("Está chovendo!");
+    Serial.println("SENSOR CHUVA --> Está chovendo!");
+    delay(350);
   } else {
-    MICRO_JANELA.write(0);     // Abre janela quando não chove
+    MICRO_JANELA.write(180);     // Abre janela quando não chove
   }
 
   // ======================
@@ -128,12 +129,14 @@ void loop() {
 
   if (leituraAbrirAtual == LOW && leituraAbrirAnterior == HIGH) {
     anguloDestino = 118;
-    delay(200);
+    Serial.println("GARAGEM --> Abrindo.");
+    delay(100);
   }
 
   if (leituraFecharAtual == LOW && leituraFecharAnterior == HIGH) {
     anguloDestino = 0;
-    delay(200);
+    Serial.println("GARAGEM --> Fechando.");
+    delay(100);
   }
 
   leituraAbrirAnterior  = leituraAbrirAtual;
@@ -187,12 +190,12 @@ void loop() {
     MICRO_VARAL.write(angulo_v);
 
     // Mostrar no serial
-    Serial.print("Leitura: ");
+    Serial.print("VARAL --> Leitura: ");
     Serial.print(leitura_v);
     Serial.print(" | Ângulo: ");
     Serial.println(angulo_v);
 
-    delay(10);
+    delay(50);
   }
 }
 
