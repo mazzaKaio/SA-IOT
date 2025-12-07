@@ -50,7 +50,7 @@ void setup() {
   pinMode(lixo_ECHO, INPUT);
   pinMode(lixo_TRIG, OUTPUT);
   servoLixo.attach(4);
-  servoLixo.write(100);
+  servoLixo.write(80);
 
 
   // ALARME
@@ -93,10 +93,10 @@ void loop() {
   Serial.println(" cm");
 
   if (lixo_distancia > 0 && lixo_distancia <= 20) {
-    servoLixo.write(40);
+    servoLixo.write(20);
     delay(3000);
   } else {
-    servoLixo.write(100);
+    servoLixo.write(80);
   }
 
   delay(50);
@@ -183,9 +183,10 @@ void loop() {
 
   bool luz_movimento = false;
 
-  // Se a distância for válida e menor que 50 cm, consideramos "movimento"
-  if (luz_distancia > 0 && luz_distancia <= 50) {
+  // Se a distância for válida e menor que 8 cm, consideramos "movimento"
+  if (luz_distancia > 0 && luz_distancia <= 8) {
     luz_movimento = true;
+    
   }
 
   // -------------------------------------------------------------------
@@ -204,7 +205,7 @@ void loop() {
 
   // Mantém a Luz acesa por 4 segundos (ou 150000 ms se quiser 2,5 minutos)
   if (luz_luzAcesa) {
-    if (millis() - luz_tempoInicio >= 4000) {
+    if (millis() - luz_tempoInicio >= 5000) {
       digitalWrite(luz_led, LOW);  // Apaga a luz após o tempo
       luz_luzAcesa = false;
       Serial.println("Luz Apagada");
