@@ -16,7 +16,7 @@ MFRC522 rfid(PINO_SDA, PINO_RST); // Objeto do RFID
 Servo MICRO_DOOR; // Objeto do Servo responsável pela porta
 
 // Variáveis usadas para verificação
-String cartao_rf = " e3 de cc e4";
+String cartao_rf = " 53 51 08 e4";
 String chaveiro_rf = " 07 e3 41 66";
 int FREQUENCIA = 3300;
 
@@ -128,7 +128,7 @@ void loop() {
   leituraFecharAtual = digitalRead(botaoFechar);
 
   if (leituraAbrirAtual == LOW && leituraAbrirAnterior == HIGH) {
-    anguloDestino = 118;
+    anguloDestino = 100;
     Serial.println("GARAGEM --> Abrindo.");
     delay(100);
   }
@@ -238,8 +238,8 @@ void efeitoErro() {
 }
 
 void alarmeIncendio() {
-  tone(buzzer_fogo, freq_fogo);
+  tone(BUZZER_DOOR, freq_fogo);
   delay(1500);
-  noTone(buzzer_fogo);
+  noTone(BUZZER_DOOR);
   delay(1500);
 }
